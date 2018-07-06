@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.slice.widget.SliceView
 import com.example.android.sliceviewer.R
-import com.example.android.sliceviewer.R.drawable
 import com.example.android.sliceviewer.R.id
 import com.example.android.sliceviewer.R.layout
 import com.example.android.sliceviewer.R.string
@@ -111,11 +110,15 @@ class SliceViewerActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         typeMenu = menu.addSubMenu(R.string.slice_mode_title).apply {
-            setIcon(drawable.ic_large)
+            setIcon(R.drawable.ic_large)
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             add(R.string.shortcut_mode)
             add(R.string.small_mode)
             add(R.string.large_mode)
+        }
+        menu.add(R.string.open).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            setIcon(R.drawable.ic_folder_open_black_24dp)
         }
 
         viewModel.selectedMode.observe(this, Observer {
@@ -137,6 +140,9 @@ class SliceViewerActivity : AppCompatActivity() {
                 viewModel.selectedMode.value = SliceView.MODE_SMALL
             getString(R.string.large_mode) ->
                 viewModel.selectedMode.value = SliceView.MODE_LARGE
+            getString(R.string.open) -> {
+                val x = true
+            }
         }
         return true
     }

@@ -26,5 +26,6 @@
     <string name="shortcut_mode">Shortcut</string>
     <string name="small_mode">Small</string>
     <string name="large_mode">Large</string>
-
+    <string name="open">Open</string>
+    <string name="slice_uri">↳ %1$s</string>
 </resources>

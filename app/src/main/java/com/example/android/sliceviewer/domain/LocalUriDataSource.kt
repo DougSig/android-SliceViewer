@@ -43,9 +43,7 @@ class LocalUriDataSource(
     }
 
     private fun save(list: List<Uri>) {
-        sharedPrefs.edit {
-            putStringSet(KEY_URI, list.map { it.toString() }.toSet())
-        }
+        sharedPrefs.edit { putStringSet(KEY_URI, list.map { it.toString() }.toSet()) }
     }
 
     companion object {
