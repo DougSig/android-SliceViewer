@@ -26,7 +26,7 @@ import androidx.core.content.edit
 class LocalUriDataSource(
     private val sharedPrefs: SharedPreferences
 ) : UriDataSource {
-    override fun getAllUris(): MutableList<Uri> {
+    override fun getSavedUris(): MutableList<Uri> {
         return sharedPrefs.getStringSet(
             KEY_URI, setOf<String>()
         ).map {
@@ -34,15 +34,15 @@ class LocalUriDataSource(
         }.toMutableList()
     }
 
-    override fun addUri(uri: Uri) {
-        save(getAllUris().apply { add(uri) })
+    override fun saveUri(uri: Uri) {
+        saveAll(getSavedUris().apply { add(uri) })
     }
 
-    override fun removeFromPosition(index: Int) {
-        save(getAllUris().apply { removeAt(index) })
+    override fun removeSavedUriFromPosition(index: Int) {
+        saveAll(getSavedUris().apply { removeAt(index) })
     }
 
-    private fun save(list: List<Uri>) {
+    private fun saveAll(list: List<Uri>) {
         sharedPrefs.edit { putStringSet(KEY_URI, list.map { it.toString() }.toSet()) }
     }
 

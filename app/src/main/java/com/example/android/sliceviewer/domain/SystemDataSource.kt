@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package com.example.android.sliceviewer.ui.single
+package com.example.android.sliceviewer.domain
 
-import android.net.Uri
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.slice.widget.SliceView
-import com.example.android.sliceviewer.domain.UriDataSource
+import com.example.android.sliceviewer.ui.model.SystemPackage
 
-class SingleSliceViewModel(
-    private val uriDataSource: UriDataSource
-) : ViewModel() {
-
-    val selectedMode = MutableLiveData<Int>().apply { value = SliceView.MODE_LARGE }
-
-    fun addSlice(uri: Uri) {
-        uriDataSource.saveUri(uri)
-    }
+interface SystemDataSource {
+    fun getAllSlices(): List<SystemPackage>
 }

@@ -22,18 +22,21 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.android.sliceviewer.domain.LocalUriDataSource
+import com.example.android.sliceviewer.domain.OnDeviceSystemDataSource
+import com.example.android.sliceviewer.domain.SystemDataSource
 import com.example.android.sliceviewer.domain.UriDataSource
 import com.example.android.sliceviewer.ui.list.SliceViewModel
 import com.example.android.sliceviewer.ui.single.SingleSliceViewModel
 
 class ViewModelFactory private constructor(
-    private val uriDataSource: UriDataSource
+    private val uriDataSource: UriDataSource,
+    private val systemDataSource: SystemDataSource
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SliceViewModel::class.java)) {
-            return SliceViewModel(uriDataSource) as T
+            return SliceViewModel(uriDataSource, systemDataSource) as T
         } else if (modelClass.isAssignableFrom(SingleSliceViewModel::class.java)) {
             return SingleSliceViewModel(uriDataSource) as T
         }
@@ -53,7 +56,10 @@ class ViewModelFactory private constructor(
                             LocalUriDataSource.SHARED_PREFS_NAME,
                             Context.MODE_PRIVATE
                         )
-                        INSTANCE = ViewModelFactory(LocalUriDataSource(sharedPrefs))
+                        INSTANCE = ViewModelFactory(
+                            LocalUriDataSource(sharedPrefs),
+                            OnDeviceSystemDataSource(context)
+                        )
                     }
                 }
             }

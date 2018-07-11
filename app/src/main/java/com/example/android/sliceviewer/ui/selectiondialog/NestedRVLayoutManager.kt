@@ -1,3 +1,5 @@
+package com.example.android.sliceviewer.ui.selectiondialog
+
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
@@ -47,12 +49,12 @@ class NestedRVLayoutManager : LinearLayoutManager {
                 }
             }
         }
-        when (widthMode) {
-            View.MeasureSpec.EXACTLY -> width = widthSize
+        if (widthMode == View.MeasureSpec.EXACTLY) {
+            width = widthSize
         }
 
-        when (heightMode) {
-            View.MeasureSpec.EXACTLY -> height = heightSize
+        if (heightMode == View.MeasureSpec.EXACTLY) {
+            height = heightSize
         }
 
         setMeasuredDimension(width, height)
@@ -73,8 +75,7 @@ class NestedRVLayoutManager : LinearLayoutManager {
             )
 
             val childHeightSpec = ViewGroup.getChildMeasureSpec(
-                heightSpec,
-                paddingTop + paddingBottom, p.height
+                heightSpec, paddingTop + paddingBottom, p.height
             )
 
             view.measure(childWidthSpec, childHeightSpec)

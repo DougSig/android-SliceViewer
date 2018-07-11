@@ -19,7 +19,7 @@ package com.example.android.sliceviewer.domain
 import android.net.Uri
 
 interface UriDataSource {
-    fun getAllUris(): List<Uri>
-    fun addUri(uri: Uri)
-    fun removeFromPosition(index: Int)
+    fun getSavedUris(): List<Uri>
+    fun saveUri(uri: Uri)
+    fun removeSavedUriFromPosition(index: Int)
 }

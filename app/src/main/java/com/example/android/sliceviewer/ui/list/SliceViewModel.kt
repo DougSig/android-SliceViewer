@@ -20,22 +20,27 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.slice.widget.SliceView
+import com.example.android.sliceviewer.domain.SystemDataSource
 import com.example.android.sliceviewer.domain.UriDataSource
+import com.example.android.sliceviewer.ui.model.SystemPackage
 
 class SliceViewModel(
-    private val uriDataSource: UriDataSource
+    private val uriDataSource: UriDataSource,
+    private val systemDataSource: SystemDataSource
 ) : ViewModel() {
 
     val selectedMode = MutableLiveData<Int>().apply { value = SliceView.MODE_LARGE }
-
+    val systemSlices = MutableLiveData<List<SystemPackage>>().apply {
+        value = systemDataSource.getAllSlices()
+    }
     val slices
-        get() = uriDataSource.getAllUris()
+        get() = uriDataSource.getSavedUris()
 
     fun addSlice(uri: Uri) {
-        uriDataSource.addUri(uri)
+        uriDataSource.saveUri(uri)
     }
 
     fun removeFromPosition(position: Int) {
-        uriDataSource.removeFromPosition(position)
+        uriDataSource.removeSavedUriFromPosition(position)
     }
 }

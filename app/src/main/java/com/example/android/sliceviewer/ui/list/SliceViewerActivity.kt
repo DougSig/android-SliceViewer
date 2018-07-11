@@ -19,6 +19,7 @@ package com.example.android.sliceviewer.ui.list
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.SubMenu
@@ -37,6 +38,7 @@ import com.example.android.sliceviewer.R.id
 import com.example.android.sliceviewer.R.layout
 import com.example.android.sliceviewer.R.string
 import com.example.android.sliceviewer.ui.ViewModelFactory
+import com.example.android.sliceviewer.ui.selectiondialog.SliceSelectionDialog
 
 /**
  * Example use of SliceView. Uses a search bar to select/auto-complete a slice uri which is
@@ -141,7 +143,8 @@ class SliceViewerActivity : AppCompatActivity() {
             getString(R.string.large_mode) ->
                 viewModel.selectedMode.value = SliceView.MODE_LARGE
             getString(R.string.open) -> {
-                val x = true
+                Log.d("test", "test")
+                SliceSelectionDialog().show(supportFragmentManager, "slice_selection")
             }
         }
         return true
