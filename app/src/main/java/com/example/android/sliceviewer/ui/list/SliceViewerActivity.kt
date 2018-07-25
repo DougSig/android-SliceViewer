@@ -61,6 +61,10 @@ class SliceViewerActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(SliceViewModel::class.java)
 
+        viewModel.systemSlicesLoadingState.observe(this, Observer {
+            // React to loading state.
+        })
+        viewModel.refreshSystemSlices()
         searchView = findViewById<SearchView>(id.search_view).apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextChange(newText: String?) = false
@@ -143,7 +147,6 @@ class SliceViewerActivity : AppCompatActivity() {
             getString(R.string.large_mode) ->
                 viewModel.selectedMode.value = SliceView.MODE_LARGE
             getString(R.string.open) -> {
-                Log.d("test", "test")
                 SliceSelectionDialog().show(supportFragmentManager, "slice_selection")
             }
         }

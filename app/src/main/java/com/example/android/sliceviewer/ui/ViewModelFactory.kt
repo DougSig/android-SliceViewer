@@ -18,25 +18,28 @@ package com.example.android.sliceviewer.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.WorkManager
+import com.example.android.sliceviewer.domain.LocalSystemDataCache
 import com.example.android.sliceviewer.domain.LocalUriDataSource
-import com.example.android.sliceviewer.domain.OnDeviceSystemDataSource
-import com.example.android.sliceviewer.domain.SystemDataSource
+import com.example.android.sliceviewer.domain.SystemDataCache
 import com.example.android.sliceviewer.domain.UriDataSource
 import com.example.android.sliceviewer.ui.list.SliceViewModel
 import com.example.android.sliceviewer.ui.single.SingleSliceViewModel
 
 class ViewModelFactory private constructor(
+    private val workManager: WorkManager,
     private val uriDataSource: UriDataSource,
-    private val systemDataSource: SystemDataSource
+    private val systemDataCache: SystemDataCache
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SliceViewModel::class.java)) {
-            return SliceViewModel(uriDataSource, systemDataSource) as T
+            return SliceViewModel(
+                uriDataSource, systemDataCache, workManager
+            ) as T
         } else if (modelClass.isAssignableFrom(SingleSliceViewModel::class.java)) {
             return SingleSliceViewModel(uriDataSource) as T
         }
@@ -57,8 +60,13 @@ class ViewModelFactory private constructor(
                             Context.MODE_PRIVATE
                         )
                         INSTANCE = ViewModelFactory(
+                            WorkManager.getInstance(),
                             LocalUriDataSource(sharedPrefs),
-                            OnDeviceSystemDataSource(context)
+                            LocalSystemDataCache(
+                                context.getSharedPreferences(
+                                    "system_slices", Context.MODE_PRIVATE
+                                )
+                            )
                         )
                     }
                 }

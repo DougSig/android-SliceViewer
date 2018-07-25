@@ -16,12 +16,14 @@
 
 package com.example.android.sliceviewer.domain
 
-import android.app.slice.SliceProvider
+import android.app.slice.SliceProvider.SLICE_TYPE
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.ProviderInfo
 import android.net.Uri
+import android.util.Log
+import androidx.core.os.trace
 import androidx.slice.SliceViewManager
 import com.example.android.sliceviewer.ui.model.PackageSlice
 import com.example.android.sliceviewer.ui.model.SystemPackage
@@ -31,23 +33,31 @@ class OnDeviceSystemDataSource(val context: Context) : SystemDataSource {
         val systemPackages = mutableListOf<SystemPackage>()
         val sliceProviders = mutableListOf<ProviderInfo>()
         val sliceViewManager = SliceViewManager.getInstance(context)
-        context.packageManager.getInstalledPackages(PackageManager.GET_PROVIDERS).forEach {
-            val systemPackage = SystemPackage(it.packageName, mutableListOf())
-            it.providers?.forEach {
-                if (SliceProvider.SLICE_TYPE == it.toUriString()) {
-                    sliceProviders.add(it)
-                    val authority = it.authority.split(";")[0]
-                    val slices = sliceViewManager.getSliceDescendants(
-                        Uri.Builder()
-                            .scheme(ContentResolver.SCHEME_CONTENT)
-                            .authority(authority)
-                            .build()
-                    )
-                    systemPackage.slices.addAll(slices.map { PackageSlice(it) })
+        trace("getInstalledPackages") {
+            context.packageManager.getInstalledPackages(PackageManager.GET_PROVIDERS).forEach {
+                Log.d("test", "context works in background")
+                val systemPackage = SystemPackage(it.packageName, mutableListOf())
+                trace("singleInstalledPackage") {
+                    it.providers?.forEach {
+                        trace("singleProviderInfo") {
+                            if (SLICE_TYPE == it.getType(context)) {
+                                sliceProviders.add(it)
+                                val authority = it.authority.split(";".toRegex())
+                                    .dropLastWhile { it.isEmpty() }.toTypedArray()[0]
+                                val slices = sliceViewManager.getSliceDescendants(
+                                    Uri.Builder()
+                                        .scheme(ContentResolver.SCHEME_CONTENT)
+                                        .authority(authority)
+                                        .build()
+                                )
+                                systemPackage.slices.addAll(slices.map { PackageSlice(it) })
+                            }
+                        }
+                    }
                 }
-            }
-            if (systemPackage.slices.isNotEmpty()) {
-                systemPackages.add(systemPackage)
+                if (systemPackage.slices.isNotEmpty()) {
+                    systemPackages.add(systemPackage)
+                }
             }
         }
         return systemPackages
@@ -62,5 +72,16 @@ class OnDeviceSystemDataSource(val context: Context) : SystemDataSource {
             .authority(parsedAuthority)
             .build()
             .toString()
+    }
+
+    private fun ProviderInfo.getType(context: Context): String {
+        authority ?: return ""
+        val providerAuthority = authority.split(";".toRegex()).toTypedArray()[0]
+        return context.contentResolver.getType(
+            Uri.Builder()
+                .scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(providerAuthority)
+                .build()
+        )?.toString() ?: ""
     }
 }
